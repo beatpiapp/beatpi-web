@@ -76,3 +76,4 @@ If this policy changes, the new version will be published on this same page.
 ## Contact
 
 For any questions: beatpi.app@gmail.com
+
