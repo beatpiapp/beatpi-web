@@ -62,12 +62,16 @@ const T = es ? {
   note: "beatPi es una app para Android que crea beats dibujando. Cada punto es un golpe; cuando la barra pasa por él, suena.",
   bad: "Este enlace no tiene ningún beat", badNote: "Puede que se haya cortado al copiarlo.",
   board: "Dibujo del beat",
+  listen: "Para oírlo, ábrelo en beatPi.",
+  elsewhere: "Para oírlo, abre este enlace en un móvil o tablet Android con beatPi.",
 } : {
   title: "A beat made with beatPi", untitled: "A beat for you", open: "Open in beatPi",
   store: "Get beatPi on Google Play", hits: n => n === 1 ? "1 hit" : n + " hits",
   note: "beatPi is an Android app for making beats by drawing. Every dot is a hit; when the bar passes it, it plays.",
   bad: "This link has no beat in it", badNote: "It may have been cut off when it was copied.",
   board: "The beat's drawing",
+  listen: "To hear it, open it in beatPi.",
+  elsewhere: "To hear it, open this link on an Android phone or tablet with beatPi.",
 };
 document.documentElement.lang = es ? "es" : "en";
 const PACKS = {
@@ -223,9 +227,14 @@ canvas.setAttribute("aria-label", T.board);
   $("title").textContent = beat.name || T.untitled;
   const hits = beat.rings.reduce((n, r) => n + r.length, 0);
   $("meta").textContent = `${beat.bpm} BPM · ${PACKS[beat.pack][es ? 0 : 1]} · ${T.hits(hits)}`;
-  $("note").textContent = T.note;
   // On Android, open the app; if it is not installed, Chrome goes to Google Play instead.
-  if (/android/i.test(navigator.userAgent)) {
+  // Tablets (and phones set to "desktop site") send a Linux desktop user agent, so a Linux
+  // browser with a touch screen counts as Android too.
+  const ua = navigator.userAgent;
+  const android = /android/i.test(ua) || navigator.userAgentData?.platform === "Android" ||
+    (/linux/i.test(ua) && !/cros/i.test(ua) && navigator.maxTouchPoints > 0);
+  $("note").textContent = (android ? T.listen : T.elsewhere) + " " + T.note;
+  if (android) {
     const open = $("open");
     open.textContent = T.open;
     open.href = `intent://beatpiapp.github.io/beatpi-web/b/?c=${code}#Intent;scheme=https;package=com.beatpi.app;end`;
