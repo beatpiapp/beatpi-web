@@ -237,7 +237,11 @@ canvas.setAttribute("aria-label", T.board);
   if (android) {
     const open = $("open");
     open.textContent = T.open;
-    open.href = `intent://beatpiapp.github.io/beatpi-web/b/?c=${code}#Intent;scheme=https;package=com.beatpi.app;end`;
+    // Opera does not understand intent:// links, so it gets the app's own beatpi:// link
+    // (without the jump to Google Play when the app is missing).
+    const opera = /\bOP[RXT]\/|Opera/.test(ua);
+    open.href = opera ? `beatpi://b/?c=${code}`
+      : `intent://beatpiapp.github.io/beatpi-web/b/?c=${code}#Intent;scheme=https;package=com.beatpi.app;end`;
     open.hidden = false;
   }
   animate(beat);
